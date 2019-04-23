@@ -1,0 +1,360 @@
+
+#include "pch.h"
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <numeric>
+#include <random>
+#include "CMatrix.h"
+
+
+
+template<class T>
+void MultiplyMatrices(CMatrix<T> FirstMatrix, CMatrix<T> SecondMatrix)
+{
+	int FirstRowCount = FirstMatrix.GetRowCount();
+	int FirstColCount = FirstMatrix.GetColCount();
+	int SecondRowCount = SecondMatrix.GetRowCount();
+	int SecondColCount = SecondMatrix.GetColCount();
+	T iteration_result = 0;
+
+	CMatrix<T> MultiplicationResult(FirstRowCount, SecondColCount);
+
+	if (FirstColCount == SecondRowCount)
+	{
+		for (int i = 0; i < FirstRowCount; i++)
+			for (int j = 0; j < SecondColCount; j++)
+			{
+				
+				for (int k = 0; k < FirstColCount; k++)
+				{
+					iteration_result = FirstMatrix.GetCellValue(i, k) * SecondMatrix.GetCellValue(k, j);
+					MultiplicationResult.AddToCellValue(i, j, iteration_result);
+				}
+			}
+		std::cout << std::endl << "Результат произведения матриц: " << std::endl;
+		MultiplicationResult.OutputMatrix(std::cout);
+	}
+
+	else
+	{
+		std::cout << "Операция умножения определена только для матриц, количество столбцов в первой из которых равно количеству строк второй." << std::endl;
+	}
+}
+
+template<class T>
+void MainMenu()
+{
+	CMatrix<float> Matrix1;
+	CMatrix<float> Matrix2;
+	int switch_value;
+	bool k = true;
+
+	while (k)
+	{
+		std::cout << "1. Ввести новую матрицу" << std::endl;
+		std::cout << "2. Отобразить текущую матрицу" << std::endl;
+		std::cout << "3. Показать размер текущей матрицы" << std::endl;
+		std::cout << "4. Вычислить сумму строки" << std::endl;
+		std::cout << "5. Вычислить сумму столбца" << std::endl;
+		std::cout << "6. Отобразить минимальный элемент матрицы" << std::endl;
+		std::cout << "7. Отобразить максимальный элемент матрицы" << std::endl;
+		std::cout << "8. Транспонировать матрицу" << std::endl;
+		std::cout << "9. Умножить текущую матрицу на число" << std::endl;
+		std::cout << "10. Умножить текущую матрицу на матрицу" << std::endl;
+		std::cout << "11. Заполнить матрицу случайными целочисленными значениями" << std::endl;
+		std::cout << "0. Удалить матрицу" << std::endl;
+		
+		std::cout << std::endl;
+		std::cin >> switch_value;
+
+		while (std::cin.fail())
+		{
+			std::cout << "Введите номер пункта меню " << std::endl;
+			std::cin.clear();
+			while (std::cin.get() != '\n');
+			std::cin >> switch_value;
+		}
+
+
+		switch (switch_value)
+		{
+		case 0:
+			std::cout << std::endl;
+			Matrix1.DeleteMatrix();
+			std::cout << "Матрица удалена" << std::endl;
+			system("pause");
+			std::cout << std::endl;
+			break;
+		case 1:
+		{
+			int row_c, col_c;
+			std::cout << std::endl;
+
+			std::cout << "Введите количество строк матрицы " << std::endl;
+			std::cin >> row_c;
+			while (std::cin.fail() || (row_c <= 0))
+			{
+				std::cout << "Значения размеров матрицы не могут быть меньше 1. Введите корректные данные" << std::endl;
+				std::cin.clear();
+				while (std::cin.get() != '\n');
+				std::cin >> row_c;
+			}
+
+			std::cout << "Введите количество столбцов матрицы " << std::endl;
+			std::cin >> col_c;
+			while (std::cin.fail() || (col_c <= 0))
+			{
+				std::cout << "Значения размеров матрицы не могут быть меньше 1. Введите корректные данные" << std::endl;
+				std::cin.clear();
+				while (std::cin.get() != '\n');
+				std::cin >> col_c;
+			}
+
+			Matrix1.CreateNewMatrix(std::cin, std::cout, row_c, col_c);
+			std::cout << std::endl;
+			system("pause");
+			std::cout << std::endl;
+			break;
+		}
+		case 2:
+			std::cout << std::endl;
+			if (!Matrix1.OutputMatrix(std::cout))
+			{
+				std::cout << "Матрица пуста" << std::endl << std::endl;
+			}
+			system("pause");
+			std::cout << std::endl;
+			break;
+		case 3:
+			std::cout << std::endl;
+			std::cout << "Количество строк в матрице равно: " << Matrix1.GetRowCount() << std::endl;
+			std::cout << "Количество столбцов в матрице равно: " << Matrix1.GetColCount() << std::endl << std::endl;
+			system("pause");
+			std::cout << std::endl;
+			break;
+		case 4:
+		{
+			int row_number;
+			std::cout << std::endl << "Введите номер строки, которую требуется просуммировать" << std::endl;
+			std::cin >> row_number;
+			while (std::cin.fail() || (row_number <= 0))
+			{
+				std::cout << "Номер строки не может быть меньше 1. Введите корректное значение" << std::endl;
+				std::cin.clear();
+				while (std::cin.get() != '\n');
+				std::cin >> row_number;
+			}
+
+			std::pair<bool, T> row_sum = Matrix1.GetRowSum(row_number);
+			if (row_sum.first)
+			{
+				std::cout << "Сумма указанной строки равна: " << row_sum.second << std::endl;
+			}
+			else
+			{
+				std::cout << "Ошибка" << std::endl;
+			}
+			system("pause");
+			std::cout << std::endl;
+			break;
+		}
+		case 5:
+		{
+			int col_number;
+			std::cout << std::endl << "Введите номер столбца, который требуется просуммировать" << std::endl;
+			std::cin >> col_number;
+			while (std::cin.fail() || (col_number <= 0))
+			{
+				std::cout << "Номер столбца не может быть меньше 1. Введите корректное значение" << std::endl;
+				std::cin.clear();
+				while (std::cin.get() != '\n');
+				std::cin >> col_number;
+			}
+
+			std::pair<bool, T> col_sum = Matrix1.GetColSum(col_number);
+			if (col_sum.first)
+			{
+				std::cout << "Сумма указанного столбца равна: " << col_sum.second << std::endl;
+			}
+			else
+			{
+				std::cout << "Ошибка" << std::endl;
+			}
+			system("pause");
+			std::cout << std::endl;
+			break;
+		}
+		case 6:
+		{
+			std::pair<bool, T> min_elem = Matrix1.GetMin();
+
+			if (min_elem.first)
+			{
+				std::cout << std::endl << "Минимальный элемент матрицы равен: " << min_elem.second << std::endl;
+			}
+			else
+			{
+				std::cout << std::endl << "Матрица пуста" << std::endl;
+			}
+
+			system("pause");
+			std::cout << std::endl;
+			break;
+		}
+		case 7:
+		{
+			std::pair<bool, T> max_elem = Matrix1.GetMax();
+
+			if (max_elem.first)
+			{
+				std::cout << std::endl << "Максимальный элемент матрицы равен: " << max_elem.second << std::endl;
+			}
+			else
+			{
+				std::cout << std::endl << "Матрица пуста" << std::endl;
+			}
+
+			system("pause");
+			std::cout << std::endl;
+			break;
+		}
+		case 8:
+			std::cout << std::endl;
+			if (!Matrix1.TransponeMatrix())
+			{
+				std::cout << "Матрица пуста" << std::endl;
+			}
+			else
+			{
+				std::cout << "Транспонированная матрица: " << std::endl;
+				Matrix1.OutputMatrix(std::cout);
+			}
+			std::cout << std::endl;
+			system("pause");
+			std::cout << std::endl;
+			break;
+		case 9:
+		{
+			T multiplier;
+			std::cout << std::endl << "Введите множитель" << std::endl;
+			std::cin >> multiplier;
+			while (std::cin.fail())
+			{
+				std::cout << "Введите множитель" << std::endl;
+				std::cin.clear();
+				while (std::cin.get() != '\n');
+				std::cin >> multiplier;
+			}
+
+			if (!Matrix1.MultiplyByNumber(multiplier))
+			{
+				std::cout << "Матрица пуста" << std::endl;
+			}
+			else
+			{
+				std::cout << "Умноженная матрица: " << std::endl;
+				Matrix1.OutputMatrix(std::cout);
+				std::cout << std::endl;
+			}
+			system("pause");
+			std::cout << std::endl;
+			break;
+		}
+		case 10:
+		{
+			int col_c;
+			std::cout << std::endl << "Введите вторую матрицу. Количество строк в ней должно быть равно " << Matrix1.GetColCount() << std::endl;
+			std::cout << "Введите количество столбцов второй матрицы" << std::endl;
+			std::cin >> col_c;
+			while (std::cin.fail() || (col_c <= 0))
+			{
+				std::cout << "Значения размеров матрицы не могут быть меньше 1. Введите корректные данные" << std::endl;
+				std::cin.clear();
+				while (std::cin.get() != '\n');
+				std::cin >> col_c;
+			}
+			Matrix2.CreateNewMatrix(std::cin, std::cout, Matrix1.GetColCount(), col_c);
+			std::cout << std::endl;
+			MultiplyMatrices(Matrix1, Matrix2);
+			system("pause");
+			std::cout << std::endl;
+			break;
+		}
+		case 11:
+		{
+			int low, high, row_c, col_c;
+			std::cout << std::endl << "Введите нижнюю границу диапазона " << std::endl;
+			std::cin >> low;
+			while (std::cin.fail())
+			{
+				std::cout << "Введите нижнюю границу диапазона" << std::endl;
+				std::cin.clear();
+				while (std::cin.get() != '\n');
+				std::cin >> low;
+			}
+			std::cout << std::endl << "Введите верхнюю границу диапазона " << std::endl;
+			std::cin >> high;
+			while (std::cin.fail())
+			{
+				std::cout << "Введите верхнюю границу диапазона" << std::endl;
+				std::cin.clear();
+				while (std::cin.get() != '\n');
+				std::cin >> high;
+			}
+
+			std::cout << "Введите количество строк матрицы " << std::endl;
+			std::cin >> row_c;
+			while (std::cin.fail() || (row_c <= 0))
+			{
+				std::cout << "Значения размеров матрицы не могут быть меньше 1. Введите корректные данные" << std::endl;
+				std::cin.clear();
+				while (std::cin.get() != '\n');
+				std::cin >> row_c;
+			}
+
+			std::cout << "Введите количество столбцов матрицы " << std::endl;
+			std::cin >> col_c;
+			while (std::cin.fail() || (col_c <= 0))
+			{
+				std::cout << "Значения размеров матрицы не могут быть меньше 1. Введите корректные данные" << std::endl;
+				std::cin.clear();
+				while (std::cin.get() != '\n');
+				std::cin >> col_c;
+			}
+
+			Matrix1.FillInMatrixRandomly(low, high, row_c, col_c);
+			std::cout << std::endl << "Сгенерирована случайная матрица:" << std::endl;
+			Matrix1.OutputMatrix(std::cout);
+			std::cout << std::endl;
+			system("pause");
+			std::cout << std::endl;
+			break;
+		}
+		}
+	}
+}
+
+int main()
+{
+	setlocale(LC_ALL, "ru");
+
+	std::cout << "        .___  ___.      ___     .___________..______      __  ___   ___ " << std::endl;
+	std::cout << "        |   \\\/   |     /   \\\    |           ||   _  \\\    |  | \\\  \\\ /  / " << std::endl;
+	std::cout << "        |  \\\  /  |    /  ^  \\\   `---|  |----`|  |_)  |   |  |  \\\  V  /  " << std::endl;
+	std::cout << "        |  |\\\/|  |   /  /_\\\  \\\      |  |     |      /    |  |   >   <   " << std::endl;
+	std::cout << "        |  |  |  |  /  _____  \\\     |  |     |  |\\\  \\\--. |  |  /  .  \\\  " << std::endl;
+	std::cout << "        |__|  |__| /__/     \\\__\\\    |__|     | _| `.___| |__| /__/ \\\__\\\ " << std::endl << std::endl;
+
+	std::cout << ".___  ___.      ___      .__   __.      ___        _______  _______ .______    " << std::endl;
+	std::cout << "|   \\\/   |     /   \\\     |  \\\ |  |     /   \\\      /  _____||   ____||   _  \\\   " << std::endl;
+	std::cout << "|  \\\  /  |    /  ^  \\\    |   \\\|  |    /  ^  \\\    |  |  __  |  |__   |  |_)  |  " << std::endl;
+	std::cout << "|  |\\\/|  |   /  /_\\\  \\\   |  . `  |   /  /_\\\  \\\   |  | |_ | |   __|  |      /   " << std::endl;
+	std::cout << "|  |  |  |  /  _____  \\\  |  |\\\   |  /  _____  \\\  |  |__| | |  |____ |  |\\\  \\\--." << std::endl;
+	std::cout << "|__|  |__| /__/     \\\__\\\ |__| \\\__| /__/     \\\__\\\  \\\______| |_______|| _| `.___|" << std::endl << std::endl;
+
+
+	MainMenu<float>();
+	system("pause");
+}
