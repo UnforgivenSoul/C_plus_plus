@@ -25,6 +25,10 @@ public:
 		matrix.clear();
 	}
 
+	CMatrix(const CMatrix & CopyMatrix) = default;
+
+	CMatrix(CMatrix && MovableMatrix) = default;
+
 public:
 
 	void SetMatrixSize(int row_c, int col_c)
@@ -254,4 +258,4 @@ public:
 			for (int j = 0; j < col_count; j++)
 				CurrentMatrix[i][j] = dist(rng);
 	}
-}; 
+};
