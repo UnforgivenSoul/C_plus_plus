@@ -1,0 +1,310 @@
+
+#include "pch.h"
+#include <iostream>
+#include <math.h>
+
+
+class Triangle
+{
+protected:
+	float a, b, c, a_b, b_c, c_a;
+	float pi = 3.14159265;
+
+public:
+	Triangle()
+	{
+
+	}
+
+	Triangle(float side_a, float side_b, float _ab)
+	{
+		a_b = _ab * pi / 180;
+		a = side_a;
+		b = side_b;
+		c = sqrt(pow(a, 2) + pow(b, 2) - 2 * a * b * cos(a_b));
+		b_c = asin(a * sin(a_b) / c);
+		c_a = asin(b * sin(a_b) / c);
+	}
+
+	void SetParams(float _a, float _b, float _a_b)
+	{
+		a = _a;
+		b = _b;
+		a_b = _a_b * pi / 180;
+		c = sqrt(pow(a, 2) + pow(b, 2) - 2 * a * b * cos(a_b));
+		b_c = asin(a * sin(a_b) / c);
+		c_a = asin(b * sin(a_b) / c);
+	}
+
+	float GetPerimetr()
+	{
+		return a + b + c;
+	}
+
+	float GetArea()
+	{
+		return 0.5 * a * b * sin(a_b);
+	}
+};
+
+	class IsoscalesTriangle : public Triangle
+	{
+	public:
+		IsoscalesTriangle() = default;
+
+		IsoscalesTriangle(float side_a, float _ab)
+		{
+			a = b = side_a;
+			a_b = _ab * pi / 180;
+			b_c = c_a = (2 * pi - a_b) / 2;
+			c = sqrt(pow(a, 2) + pow(b, 2) - 2 * a * b * cos(a_b));
+		}
+
+		void SetParams(float _a, float _a_b)
+		{
+			a = b = _a;
+			a_b = _a_b * pi / 180;
+			b_c = c_a = (2 * pi - a_b) / 2;
+			c = sqrt(pow(a, 2) + pow(b, 2) - 2 * a * b * cos(a_b));
+		}
+
+		float GetPerimetr()
+		{
+			return 2 * a + c;
+		}
+
+		float GetArea()
+		{
+			return (c * sqrt(pow(a, 2) - pow(c, 2) / 4)) / 2;
+		}
+	};
+
+
+	class RightAngelTriangle : public Triangle
+	{
+	public:
+		RightAngelTriangle() = default;
+		
+		RightAngelTriangle(float side_a, float side_b)
+		{
+			a = side_a;
+			b = side_b;
+			c = sqrt(pow(a, 2) + pow(b, 2));
+			a_b = pi / 2;
+			b_c = acos(b / a);
+			c_a = 2 * pi - a_b - b_c;
+		}
+
+		void SetParams(float _a, float _b)
+		{
+			a = _a;
+			b = _b;
+			c = sqrt(pow(a, 2) + pow(b, 2));
+			a_b = pi / 2;
+			b_c = acos(b / a);
+			c_a = 2 * pi - a_b - b_c;
+		}
+
+		float GetArea()
+		{
+			return 0.5 * a * b;
+		}
+
+		float GetPerimetr()
+		{
+			return a + b + c;
+		}
+	};
+
+	class EquilateralTriangle : public Triangle
+	{
+	public:
+		EquilateralTriangle() = default;
+
+		EquilateralTriangle(float side)
+		{
+			a = b = c = side;
+			a_b = b_c = c_a = pi / 3;
+		}
+
+		void SetParams(float _a)
+		{
+			a = b = c = _a;
+			a_b = b_c = c_a = pi / 3;
+		}
+
+		float GetArea()
+		{
+			return pow(a, 2) * sqrt(3) / 4;
+		}
+
+		float GetPerimetr()
+		{
+			return 3 * a;
+		}
+	};
+
+
+class Picture
+{
+private:
+	Triangle *triang;
+	IsoscalesTriangle *isoscales;
+	RightAngelTriangle *right;
+	EquilateralTriangle *equi;
+
+	int t, iso, r, e;
+
+public:
+	Picture(int _t, int _iso, int _r, int _e, std::istream& InputStream, std::ostream& OutputStream)
+	{
+		t = _t;
+		iso = _iso;
+		r = _r;
+		e = _e;
+
+		if (t > 0)
+		{
+			triang = new Triangle[t];
+		}
+		
+		if (iso > 0)
+		{
+			isoscales = new IsoscalesTriangle[iso];
+		}
+		
+		if (r > 0)
+		{
+			right = new RightAngelTriangle[r];
+		}
+		
+		if (e > 0)
+		{
+			equi = new EquilateralTriangle[e];
+		}
+
+		InputT(InputStream, OutputStream);
+		InputIso(InputStream, OutputStream);
+		InputR(InputStream, OutputStream);
+		InputE(InputStream, OutputStream);
+	}
+
+	void InputT(std::istream& InputStream, std::ostream& OutputStream)
+	{
+		float _a, _b, _a_b;
+
+		for (int i = 0; i < t; i++)
+		{
+			OutputStream << "Введите сторону a " << i + 1 << "-го произвольного треугольника" << std::endl;
+			InputStream >> _a;
+			OutputStream << "Введите сторону b " << i + 1 << "-го произвольного треугольника" << std::endl;
+			InputStream >> _b;
+			OutputStream << "Введите угол между сторонами a и b " << i + 1 << "-го произвольного треугольника в градусах" << std::endl;
+			InputStream >> _a_b;
+
+			triang[i].SetParams(_a, _b, _a_b);
+		}
+	}
+
+	void InputIso(std::istream& InputStream, std::ostream& OutputStream)
+	{
+		float _a, _a_b;
+
+		for (int i = 0; i < iso; i++)
+		{
+			OutputStream << "Введите длину равных сторон " << i + 1 << "-го равнобедренного треугольника" << std::endl;
+			InputStream >> _a;
+			OutputStream << "Введите угол между равными сторонами " << i + 1 << "-го равнобедренного треугольника в градусах" << std::endl;
+			InputStream >> _a_b;
+
+			isoscales[i].SetParams(_a, _a_b);
+		}
+	}
+
+	void InputR(std::istream& InputStream, std::ostream& OutputStream)
+	{
+		float _a, _b;
+
+		for (int i = 0; i < r; i++)
+		{
+			OutputStream << "Введите длину первого катета " << i + 1 << "-го прямоугольного треугольника" << std::endl;
+			InputStream >> _a;
+			OutputStream << "Введите длину второго катета " << i + 1 << "-го прямоугольного треугольника" << std::endl;
+			InputStream >> _b;
+
+			right[i].SetParams(_a, _b);
+		}
+	}
+
+	void InputE(std::istream& InputStream, std::ostream& OutputStream)
+	{
+		float _a;
+
+		for (int i = 0; i < e; i++)
+		{
+			OutputStream << "Введите длину стороны " << i + 1 << "-го равностороннего треугольника" << std::endl;
+			InputStream >> _a;
+
+			equi[i].SetParams(_a);
+		}
+	}
+
+	void GetTriangles(std::ostream& OutputStream)
+	{
+		for (int i = 0; i < t; i++)
+		{
+			OutputStream << "Площадь " << i + 1 << "-го произвольного треугольника равна: " << triang[i].GetArea() << std::endl;
+			OutputStream << "Периметр " << i + 1 << "-го произвольного треугольника равен: " << triang[i].GetPerimetr() << std::endl;
+		}
+	}
+
+	void GetIsoscales(std::ostream& OutputStream)
+	{
+		for (int i = 0; i < iso; i++)
+		{
+			OutputStream << "Площадь " << i + 1 << "-го равнобедренного треугольника равна: " << isoscales[i].GetArea() << std::endl;
+			OutputStream << "Периметр " << i + 1 << "-го равнобедренного треугольника равен: " << isoscales[i].GetPerimetr() << std::endl;
+		}
+	}
+
+	void GetRight(std::ostream& OutputStream)
+	{
+		for (int i = 0; i < r; i++)
+		{
+			OutputStream << "Площадь " << i + 1 << "-го прямоугольного треугольника равна: " << right[i].GetArea() << std::endl;
+			OutputStream << "Периметр " << i + 1 << "-го прямоугольного треугольника равен: " << right[i].GetPerimetr() << std::endl;
+		}
+	}
+
+	void GetEqui(std::ostream& OutputStream)
+	{
+		for (int i = 0; i < e; i++)
+		{
+			OutputStream << "Площадь " << i + 1 << "-го равностороннего треугольника равна: " << equi[i].GetArea() << std::endl;
+			OutputStream << "Периметр " << i + 1 << "-го равностороннего треугольника равен: " << equi[i].GetPerimetr() << std::endl;
+		}
+	}
+};
+
+int main()
+{
+	setlocale(LC_ALL, "ru");
+
+	Picture a(2, 0, 0, 0, std::cin, std::cout);
+	a.GetTriangles(std::cout);
+	std::cout << std::endl << std::endl;
+
+	Picture b(0, 2, 0, 0, std::cin, std::cout);
+	b.GetIsoscales(std::cout);
+	std::cout << std::endl << std::endl;
+
+	Picture c(0, 0, 2, 0, std::cin, std::cout);
+	c.GetRight(std::cout);
+	std::cout << std::endl << std::endl;
+
+	Picture d(0, 0, 0, 2, std::cin, std::cout);
+	d.GetEqui(std::cout);
+	std::cout << std::endl << std::endl;
+
+	system("pause");
+}
