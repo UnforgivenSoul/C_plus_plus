@@ -64,7 +64,7 @@ public:
 		CurrentMatrix = InputNewMatrix(InputStream, OutputStream);
 	}
 
-	bool OutputMatrix(std::ostream& stream)
+	bool OutputMatrix(std::ostream& stream) const
 	{
 		if (!CurrentMatrix.empty())
 		{
@@ -84,12 +84,12 @@ public:
 		}
 	}
 
-	int GetRowCount()
+	int GetRowCount() const
 	{
 		return row_count;
 	}
 
-	int GetColCount()
+	int GetColCount() const
 	{
 		return col_count;
 	}
@@ -99,7 +99,7 @@ public:
 		CurrentMatrix.clear();
 	}
 
-	auto GetMax()
+	auto GetMax() const
 	{
 		std::vector<T> max_vector;
 		T max;
@@ -119,7 +119,7 @@ public:
 		}
 	}
 
-	auto GetMin()
+	auto GetMin() const
 	{
 		std::vector<T> min_vector;
 		T min;
@@ -139,7 +139,7 @@ public:
 		}
 	}
 
-	auto GetRowSum(int row_number)
+	auto GetRowSum(int row_number) const
 	{
 		T sum_of_row;
 		std::vector<T> summation_row;
@@ -158,7 +158,7 @@ public:
 		}
 	}
 
-	auto GetColSum(int col_number)
+	auto GetColSum(int col_number) const
 	{
 		T sum_of_col;
 		std::vector<T> summation_col;
@@ -212,7 +212,7 @@ public:
 	}
 
 
-	T GetCellValue(int row, int col)
+	T GetCellValue(int row, int col) const
 	{
 		return CurrentMatrix[row][col];
 	}
@@ -258,4 +258,4 @@ public:
 			for (int j = 0; j < col_count; j++)
 				CurrentMatrix[i][j] = dist(rng);
 	}
-};
+}; 
