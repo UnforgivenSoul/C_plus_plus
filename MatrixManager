@@ -8,41 +8,6 @@
 #include <random>
 #include "CMatrix.h"
 
-
-
-template<class T>
-void MultiplyMatrices(CMatrix<T> FirstMatrix, CMatrix<T> SecondMatrix)
-{
-	int FirstRowCount = FirstMatrix.GetRowCount();
-	int FirstColCount = FirstMatrix.GetColCount();
-	int SecondRowCount = SecondMatrix.GetRowCount();
-	int SecondColCount = SecondMatrix.GetColCount();
-	T iteration_result = 0;
-
-	CMatrix<T> MultiplicationResult(FirstRowCount, SecondColCount);
-
-	if (FirstColCount == SecondRowCount)
-	{
-		for (int i = 0; i < FirstRowCount; i++)
-			for (int j = 0; j < SecondColCount; j++)
-			{
-				
-				for (int k = 0; k < FirstColCount; k++)
-				{
-					iteration_result = FirstMatrix.GetCellValue(i, k) * SecondMatrix.GetCellValue(k, j);
-					MultiplicationResult.AddToCellValue(i, j, iteration_result);
-				}
-			}
-		std::cout << std::endl << "Результат произведения матриц: " << std::endl;
-		MultiplicationResult.OutputMatrix(std::cout);
-	}
-
-	else
-	{
-		std::cout << "Операция умножения определена только для матриц, количество столбцов в первой из которых равно количеству строк второй." << std::endl;
-	}
-}
-
 template<class T>
 void MainMenu()
 {
@@ -264,6 +229,12 @@ void MainMenu()
 		}
 		case 10:
 		{
+			if ((Matrix1.GetRowCount() <= int(0)) || (Matrix1.GetColCount() <= int(0)))
+			{
+				std::cout << std::endl << "Заполните текущую матрицу" << std::endl << std::endl;
+				break;
+			}
+
 			int col_c;
 			std::cout << std::endl << "Введите вторую матрицу. Количество строк в ней должно быть равно " << Matrix1.GetColCount() << std::endl;
 			std::cout << "Введите количество столбцов второй матрицы" << std::endl;
@@ -277,7 +248,10 @@ void MainMenu()
 			}
 			Matrix2.CreateNewMatrix(std::cin, std::cout, Matrix1.GetColCount(), col_c);
 			std::cout << std::endl;
-			MultiplyMatrices(Matrix1, Matrix2);
+			if (!Matrix1.MultiplyMatrices(Matrix2))
+			{
+				std::cout << "Операция умножения определена только для матриц, количество столбцов в первой из которых равно количеству строк второй." << std::endl;
+			}
 			system("pause");
 			std::cout << std::endl;
 			break;
