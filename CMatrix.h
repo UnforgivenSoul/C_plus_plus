@@ -13,11 +13,31 @@ public:
 
 	CMatrix()
 	{
-
+		try
+		{
+			constexpr bool is_arithmetic_t = std::is_arithmetic<T>::value;
+			if (!is_arithmetic_t)
+				throw 1;
+		}
+		catch (int err)
+		{
+			exit(err);
+		}
 	}
 
 	CMatrix(int _row_c, int _col_c)
 	{
+		try
+		{
+			constexpr bool is_arithmetic_t = std::is_arithmetic<T>::value;
+			if (!is_arithmetic_t)
+				throw 1;
+		}
+		catch (int err)
+		{
+			exit(err);
+		}
+
 		row_count = _row_c;
 		col_count = _col_c;
 		std::vector<std::vector<T>> matrix(row_count, std::vector<T>(col_count));
@@ -29,14 +49,12 @@ public:
 
 	CMatrix(CMatrix && MovableMatrix) = default;
 
-public:
-
 	void SetMatrixSize(int row_c, int col_c)
 	{
 		row_count = row_c;
 		col_count = col_c;
 	}
-
+	
 	auto InputNewMatrix(std::istream& InputStream, std::ostream& OutputStream)
 	{
 		std::vector<std::vector<T>> matrix(row_count, std::vector<T>(col_count));
@@ -58,6 +76,7 @@ public:
 		return matrix;
 	}
 
+	// Функция создания матрицы производит вызов функций установки размеров и ввода матрицы
 	void CreateNewMatrix(std::istream& InputStream, std::ostream& OutputStream, int row_c, int col_c)
 	{
 		SetMatrixSize(row_c, col_c);
@@ -97,6 +116,8 @@ public:
 	void DeleteMatrix()
 	{
 		CurrentMatrix.clear();
+		col_count = 0;
+		row_count = 0;
 	}
 
 	auto GetMax() const
@@ -139,6 +160,7 @@ public:
 		}
 	}
 
+	// Подсчет суммы строки
 	auto GetRowSum(int row_number) const
 	{
 		T sum_of_row;
@@ -158,6 +180,7 @@ public:
 		}
 	}
 
+	// Подсчет суммы столбца
 	auto GetColSum(int col_number) const
 	{
 		T sum_of_col;
@@ -257,5 +280,37 @@ public:
 		for (int i = 0; i < row_count; i++)
 			for (int j = 0; j < col_count; j++)
 				CurrentMatrix[i][j] = dist(rng);
+	}
+
+	bool MultiplyMatrices(CMatrix SecondMatrix)
+	{
+		int FirstRowCount = row_count;
+		int FirstColCount = col_count;
+		int SecondRowCount = SecondMatrix.GetRowCount();
+		int SecondColCount = SecondMatrix.GetColCount();
+		T iteration_result = 0;
+
+		CMatrix<T> MultiplicationResult(FirstRowCount, SecondColCount);
+
+		if (FirstColCount == SecondRowCount)
+		{
+			for (int i = 0; i < FirstRowCount; i++)
+				for (int j = 0; j < SecondColCount; j++)
+				{
+
+					for (int k = 0; k < FirstColCount; k++)
+					{
+						iteration_result = CurrentMatrix[i][k] * SecondMatrix.GetCellValue(k, j);
+						MultiplicationResult.AddToCellValue(i, j, iteration_result);
+					}
+				}
+			MultiplicationResult.OutputMatrix(std::cout);
+			return true;
+		}
+
+		else
+		{
+			return false;
+		}
 	}
 }; 
